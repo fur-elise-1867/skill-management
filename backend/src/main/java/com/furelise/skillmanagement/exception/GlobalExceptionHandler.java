@@ -43,6 +43,11 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.UNAUTHORIZED, "Email hoặc mật khẩu không chính xác.");
     }
 
+    @ExceptionHandler(org.springframework.security.authentication.DisabledException.class)
+    public ResponseEntity<Map<String, Object>> handleDisabled(org.springframework.security.authentication.DisabledException ex) {
+        return buildErrorResponse(HttpStatus.FORBIDDEN, "Tài khoản của bạn đã bị khóa hoặc chưa kích hoạt. Vui lòng liên hệ Quản trị viên.");
+    }
+
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleUserNotFound(UsernameNotFoundException ex) {
         return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
