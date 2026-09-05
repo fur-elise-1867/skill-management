@@ -9,18 +9,37 @@ onMounted(async () => {
     await auth.fetchCurrentUser()
   }
 })
+
+function getRoleTagType(roleName?: string) {
+  if (roleName === 'ADMIN') return 'danger'
+  if (roleName === 'EDITOR') return 'warning'
+  return 'primary'
+}
 </script>
 
 <template>
   <div class="dashboard">
     <div class="dashboard-header">
       <div class="header-left">
-        <h1>Dashboard</h1>
-        <p>Chào mừng, {{ auth.user?.name || 'User' }}</p>
+        <el-avatar
+          :size="54"
+          :src="auth.user?.avatarUrl || ''"
+          class="header-avatar"
+        >
+          {{ auth.user?.name?.charAt(0).toUpperCase() || 'U' }}
+        </el-avatar>
+        <div class="header-titles">
+          <h1>Dashboard</h1>
+          <p>Chào mừng, <strong>{{ auth.user?.name || 'User' }}</strong></p>
+        </div>
       </div>
       <div class="header-right">
-        <el-tag v-if="auth.isAdmin" type="danger" size="large">ADMIN</el-tag>
-        <el-tag v-else type="primary" size="large">USER</el-tag>
+        <el-tag :type="getRoleTagType(auth.user?.role?.name)" size="large" effect="dark">
+          {{ auth.user?.role?.name || 'USER' }}
+        </el-tag>
+        <el-button @click="$router.push('/account')" type="primary" plain>
+          Thông tin tài khoản
+        </el-button>
         <el-button v-if="auth.isAdmin" @click="$router.push('/admin')" type="warning" plain>
           Quản trị
         </el-button>
@@ -33,7 +52,13 @@ onMounted(async () => {
     <el-divider />
 
     <div class="profile-section" v-if="auth.user">
-      <h2>Thông tin cá nhân</h2>
+      <div class="section-title-row">
+        <h2>Thông tin tổng quan</h2>
+        <el-button link type="primary" @click="$router.push('/account')">
+          Chỉnh sửa thông tin & Đổi ảnh đại diện →
+        </el-button>
+      </div>
+
       <el-descriptions :column="2" border size="large">
         <el-descriptions-item label="ID">{{ auth.user.id }}</el-descriptions-item>
         <el-descriptions-item label="Họ tên">{{ auth.user.name }}</el-descriptions-item>
@@ -41,14 +66,19 @@ onMounted(async () => {
         <el-descriptions-item label="Giới tính">{{ auth.user.gender || '—' }}</el-descriptions-item>
         <el-descriptions-item label="Số điện thoại">{{ auth.user.mobile || '—' }}</el-descriptions-item>
         <el-descriptions-item label="Vai trò">
-          <el-tag :type="auth.user.role?.name === 'ADMIN' ? 'danger' : 'primary'">
+          <el-tag :type="getRoleTagType(auth.user.role?.name)">
             {{ auth.user.role?.name }}
+          </el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="Trạng thái">
+          <el-tag :type="auth.user.enabled ? 'success' : 'danger'">
+            {{ auth.user.enabled ? 'Hoạt động (Active)' : 'Đã khóa (Inactive)' }}
           </el-tag>
         </el-descriptions-item>
         <el-descriptions-item label="Ngày tạo">
           {{ auth.user.createdAt ? new Date(auth.user.createdAt).toLocaleString('vi-VN') : '—' }}
         </el-descriptions-item>
-        <el-descriptions-item label="Cập nhật lần cuối">
+        <el-descriptions-item label="Cập nhật lần cuối" :span="2">
           {{ auth.user.updatedAt ? new Date(auth.user.updatedAt).toLocaleString('vi-VN') : '—' }}
         </el-descriptions-item>
       </el-descriptions>
@@ -60,7 +90,7 @@ onMounted(async () => {
 
 <style scoped>
 .dashboard {
-  max-width: 900px;
+  max-width: 960px;
   margin: 40px auto;
   padding: 0 24px;
 }
@@ -71,17 +101,31 @@ onMounted(async () => {
   align-items: center;
 }
 
-.header-left h1 {
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-avatar {
+  background: #667eea;
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.header-titles h1 {
   margin: 0;
-  font-size: 32px;
+  font-size: 30px;
   font-weight: 700;
   color: #1a1a2e;
 }
 
-.header-left p {
+.header-titles p {
   margin: 4px 0 0 0;
   color: #6b7280;
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .header-right {
@@ -90,10 +134,17 @@ onMounted(async () => {
   align-items: center;
 }
 
-.profile-section h2 {
+.section-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-title-row h2 {
   font-size: 20px;
   font-weight: 600;
   color: #1a1a2e;
-  margin-bottom: 16px;
+  margin: 0;
 }
 </style>
