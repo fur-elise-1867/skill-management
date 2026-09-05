@@ -1,12 +1,12 @@
 package com.furelise.skillmanagement.dto;
 
 import com.furelise.skillmanagement.model.Role;
+import com.furelise.skillmanagement.model.User;
 
 import java.time.Instant;
 
 /**
  * DTO for returning user data without sensitive fields (password).
- * Fixes the password hash leak vulnerability.
  */
 public record UserResponse(
         Long id,
@@ -15,6 +15,8 @@ public record UserResponse(
         String gender,
         String mobile,
         Role role,
+        boolean enabled,
+        String avatarUrl,
         Instant createdAt,
         Instant updatedAt
 ) {
@@ -22,7 +24,7 @@ public record UserResponse(
     /**
      * Factory method to create UserResponse from User entity.
      */
-    public static UserResponse from(com.furelise.skillmanagement.model.User user) {
+    public static UserResponse from(User user) {
         return new UserResponse(
                 user.getId(),
                 user.getName(),
@@ -30,6 +32,8 @@ public record UserResponse(
                 user.getGender(),
                 user.getMobile(),
                 user.getRole(),
+                user.isEnabled(),
+                user.getAvatarUrl(),
                 user.getCreatedAt(),
                 user.getUpdatedAt()
         );
