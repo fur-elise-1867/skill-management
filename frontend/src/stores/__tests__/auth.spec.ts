@@ -33,7 +33,9 @@ describe('Auth Store', () => {
       email: 'test@example.com',
       gender: null,
       mobile: null,
-      role: 'ADMIN',
+      role: { id: 1, name: 'ADMIN', description: 'Admin' },
+      enabled: true,
+      avatarUrl: null,
       createdAt: '2026-01-01T00:00:00Z',
       updatedAt: '2026-01-01T00:00:00Z',
     }

@@ -41,8 +41,8 @@ onMounted(async () => {
         <el-descriptions-item label="Giới tính">{{ auth.user.gender || '—' }}</el-descriptions-item>
         <el-descriptions-item label="Số điện thoại">{{ auth.user.mobile || '—' }}</el-descriptions-item>
         <el-descriptions-item label="Vai trò">
-          <el-tag :type="auth.user.role === 'ADMIN' ? 'danger' : 'primary'">
-            {{ auth.user.role }}
+          <el-tag :type="auth.user.role?.name === 'ADMIN' ? 'danger' : 'primary'">
+            {{ auth.user.role?.name }}
           </el-tag>
         </el-descriptions-item>
         <el-descriptions-item label="Ngày tạo">

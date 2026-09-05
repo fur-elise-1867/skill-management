@@ -15,16 +15,14 @@ export const useAuthStore = defineStore('auth', () => {
   const router = useRouter()
 
   const isAuthenticated = computed(() => !!token.value)
-  const isAdmin = computed(() => user.value?.role === 'ADMIN')
+  const isAdmin = computed(() => user.value?.role?.name === 'ADMIN')
+  const isEditor = computed(() => user.value?.role?.name === 'EDITOR')
 
   async function register(name: string, email: string, password: string, gender?: string, mobile?: string) {
     loading.value = true
     try {
-      const response = await authService.register({ name, email, password, gender, mobile })
-      token.value = response.token
-      localStorage.setItem('token', response.token)
-      await fetchCurrentUser()
-      router.push('/dashboard')
+      await authService.register({ name, email, password, gender, mobile })
+      router.push('/login')
     } finally {
       loading.value = false
     }
@@ -65,6 +63,7 @@ export const useAuthStore = defineStore('auth', () => {
     loading,
     isAuthenticated,
     isAdmin,
+    isEditor,
     register,
     login,
     fetchCurrentUser,

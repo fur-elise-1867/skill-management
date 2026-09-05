@@ -22,7 +22,7 @@ async function handleRegister() {
       form.value.gender || undefined,
       form.value.mobile || undefined,
     )
-    ElMessage.success('Đăng ký thành công!')
+    ElMessage.success('Đăng ký tài khoản thành công! Vui lòng đăng nhập bằng tài khoản vừa tạo.')
   } catch (error: any) {
     ElMessage.error(error.response?.data?.message || 'Đăng ký thất bại. Vui lòng thử lại.')
   }
