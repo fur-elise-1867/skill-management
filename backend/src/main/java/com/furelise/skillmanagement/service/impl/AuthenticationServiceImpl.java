@@ -5,6 +5,7 @@ import com.furelise.skillmanagement.dto.AuthenticationResponse;
 import com.furelise.skillmanagement.dto.RegisterRequest;
 import com.furelise.skillmanagement.model.Role;
 import com.furelise.skillmanagement.model.User;
+import com.furelise.skillmanagement.repository.RoleRepository;
 import com.furelise.skillmanagement.repository.UserRepository;
 import com.furelise.skillmanagement.service.AuthenticationService;
 import com.furelise.skillmanagement.service.JwtService;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -33,13 +35,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new IllegalArgumentException("Email đã được đăng ký: " + request.email());
         }
 
+        Role userRole = roleRepository.findByName("USER")
+                .orElseGet(() -> roleRepository.save(
+                        Role.builder().name("USER").description("Người dùng tiêu chuẩn").build()
+                ));
+
         var user = User.builder()
                 .name(request.name())
                 .gender(request.gender())
                 .email(request.email())
                 .mobile(request.mobile())
                 .password(passwordEncoder.encode(request.password()))
-                .role(Role.USER)
+                .role(userRole)
+                .enabled(true)
                 .build();
 
         userRepository.save(user);

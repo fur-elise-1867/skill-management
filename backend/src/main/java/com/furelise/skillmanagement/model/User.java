@@ -45,9 +45,16 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", nullable = false)
     private Role role;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean enabled = true;
+
+    @Column(name = "avatar_url")
+    private String avatarUrl;
 
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;
@@ -68,7 +75,8 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.toAuthority()));
+        String authority = (role != null) ? role.toAuthority() : "ROLE_USER";
+        return List.of(new SimpleGrantedAuthority(authority));
     }
 
     @Override
@@ -99,6 +107,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 }
