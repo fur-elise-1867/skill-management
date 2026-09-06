@@ -4,7 +4,7 @@ spring:
 
   # ====================== Database Configuration ======================
   datasource:
-    url: jdbc:postgresql://localhost:5432/skill_management_db
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5433}/${DB_NAME:skill_management_db}}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
@@ -44,6 +44,11 @@ management:
     web:
       exposure:
         include: health,info
+
+# ====================== File Upload Configuration ======================
+app:
+  upload:
+    dir: ${UPLOAD_DIR:uploads/avatars/}
 
 server:
   port: 8080

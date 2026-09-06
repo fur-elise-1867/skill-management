@@ -46,4 +46,7 @@ Thumbs.db
 .env
 *.log
 .ua/
+*.tar
+docker-customer/
+local-environment/
 .env.example

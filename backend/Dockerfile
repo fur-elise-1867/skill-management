@@ -6,7 +6,7 @@ WORKDIR /app
 # Copy Maven wrapper and pom.xml first for dependency caching
 COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
-RUN sed -i 's/\r$//' mvnw && chmod +x mvnw && ./mvnw dependency:go-offline -B
+RUN sed -i 's/\r$//' mvnw && chmod +x mvnw && ./mvnw dependency:resolve -B
 
 # Copy source code and build
 COPY src/ src/
@@ -17,11 +17,13 @@ FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
-# Create a non-root user for security
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+# Create a non-root user for security and ensure upload directory permissions
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup && \
+    mkdir -p /app/uploads/avatars && \
+    chown -R appuser:appgroup /app
 
 # Copy the built JAR from builder stage
-COPY --from=builder /app/target/*.jar app.jar
+COPY --from=builder --chown=appuser:appgroup /app/target/*.jar app.jar
 
 # Switch to non-root user
 USER appuser
