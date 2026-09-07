@@ -32,7 +32,11 @@ spring:
 # ====================== JWT Configuration ======================
 jwt:
   secret-key: ${JWT_SECRET:ZGV2LW9ubHktc2VjcmV0LWtleS1tdXN0LWNoYW5nZS1pbi1wcm9kdWN0aW9u}
-  expiration: 86400000  # 24 hours in milliseconds
+  expiration: ${JWT_EXPIRATION:900000}                  # 15 minutes in milliseconds
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800000} # 7 days in milliseconds
+  cleanup:
+    cron: ${JWT_CLEANUP_CRON:0 0 2 * * ?}               # 2:00 AM daily
+
 
 # ====================== CORS Configuration ======================
 cors:

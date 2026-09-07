@@ -54,6 +54,7 @@ public class JwtServiceImpl implements JwtService {
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return Jwts.builder()
                 .claims(extraClaims)
+                .id(java.util.UUID.randomUUID().toString())
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
@@ -66,6 +67,17 @@ public class JwtServiceImpl implements JwtService {
         final String username = extractUsername(jwtToken);
         return username.equals(userDetails.getUsername()) && !isTokenExpired(jwtToken);
     }
+
+    @Override
+    public String extractJti(String jwtToken) {
+        return extractClaim(jwtToken, Claims::getId);
+    }
+
+    @Override
+    public Date extractExpiration(String jwtToken) {
+        return extractClaim(jwtToken, Claims::getExpiration);
+    }
+
 
     private boolean isTokenExpired(String jwtToken) {
         return extractClaim(jwtToken, Claims::getExpiration).before(new Date());

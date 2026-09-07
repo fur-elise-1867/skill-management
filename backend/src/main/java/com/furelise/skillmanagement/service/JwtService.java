@@ -20,4 +20,9 @@ public interface JwtService {
     String generateToken(UserDetails userDetails);
 
     boolean isTokenValid(String jwtToken, UserDetails userDetails);
+
+    String extractJti(String jwtToken);
+
+    java.util.Date extractExpiration(String jwtToken);
 }
+
