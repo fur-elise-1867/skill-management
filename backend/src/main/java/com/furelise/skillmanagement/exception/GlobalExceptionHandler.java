@@ -63,6 +63,17 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.FORBIDDEN, "Bạn không có quyền thực hiện thao tác này.");
     }
 
+    @ExceptionHandler(TokenRefreshException.class)
+    public ResponseEntity<Map<String, Object>> handleTokenRefresh(TokenRefreshException ex) {
+        return buildErrorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    }
+
+    @ExceptionHandler(TokenReuseException.class)
+    public ResponseEntity<Map<String, Object>> handleTokenReuse(TokenReuseException ex) {
+        return buildErrorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    }
+
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Đã xảy ra lỗi máy chủ: " + ex.getMessage());

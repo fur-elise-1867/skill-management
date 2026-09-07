@@ -28,6 +28,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final com.furelise.skillmanagement.service.RefreshTokenService refreshTokenService;
 
     @Override
     public AuthenticationResponse register(RegisterRequest request) {
@@ -53,7 +54,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userRepository.save(user);
 
         var jwtToken = jwtService.generateToken(user);
-        return new AuthenticationResponse(jwtToken);
+        var refreshToken = refreshTokenService.createRefreshToken(user);
+        return new AuthenticationResponse(jwtToken, refreshToken.getToken());
     }
 
     @Override
@@ -69,6 +71,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found."));
 
         var jwtToken = jwtService.generateToken(user);
-        return new AuthenticationResponse(jwtToken);
+        var refreshToken = refreshTokenService.createRefreshToken(user);
+        return new AuthenticationResponse(jwtToken, refreshToken.getToken());
     }
 }

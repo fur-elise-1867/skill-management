@@ -34,13 +34,14 @@ class AuthenticationServiceTest {
     @Mock private PasswordEncoder passwordEncoder;
     @Mock private JwtService jwtService;
     @Mock private AuthenticationManager authenticationManager;
+    @Mock private RefreshTokenService refreshTokenService;
 
     private AuthenticationServiceImpl authenticationService;
 
     @BeforeEach
     void setUp() {
         authenticationService = new AuthenticationServiceImpl(
-                userRepository, roleRepository, passwordEncoder, jwtService, authenticationManager
+                userRepository, roleRepository, passwordEncoder, jwtService, authenticationManager, refreshTokenService
         );
     }
 
@@ -51,11 +52,17 @@ class AuthenticationServiceTest {
         when(roleRepository.findByName("USER")).thenReturn(Optional.of(userRole));
         when(passwordEncoder.encode("password123")).thenReturn("encodedPassword");
         when(jwtService.generateToken(any(User.class))).thenReturn("jwt-token");
+        when(refreshTokenService.createRefreshToken(any(User.class))).thenReturn(
+                com.furelise.skillmanagement.model.RefreshToken.builder().token("mock-refresh").build()
+        );
 
         RegisterRequest request = new RegisterRequest("New User", "Male", "new@test.com", "0123456789", "password123");
         AuthenticationResponse response = authenticationService.register(request);
 
         assertThat(response.token()).isEqualTo("jwt-token");
+        assertThat(response.accessToken()).isEqualTo("jwt-token");
+        assertThat(response.refreshToken()).isEqualTo("mock-refresh");
+
 
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         verify(userRepository).save(userCaptor.capture());
