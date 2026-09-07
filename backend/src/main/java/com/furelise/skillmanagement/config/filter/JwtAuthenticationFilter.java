@@ -27,6 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final com.furelise.skillmanagement.service.BlacklistService blacklistService;
 
     @Override
     protected void doFilterInternal(
@@ -45,6 +46,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             final String jwt = authHeader.substring(7);
+
+            // Kiểm tra token có nằm trong blacklist không (đã logout)
+            if (blacklistService.isTokenBlacklisted(jwt)) {
+                logger.debug("Token nằm trong blacklist, từ chối xác thực: " + jwt);
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             final String userEmail = jwtService.extractUsername(jwt);
 
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
