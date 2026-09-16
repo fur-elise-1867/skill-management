@@ -50,4 +50,9 @@ Thumbs.db
 docker-customer/
 local-environment/
 .env.example
+.gemini/
+.agents/
+.claude/
+.antigravity/
+.github/
 docs/
