@@ -11,4 +11,7 @@ import java.util.Optional;
 public interface SkillUsageRepository extends JpaRepository<SkillUsage, Long> {
     Optional<SkillUsage> findBySkillIdAndUserIdAndUsageDate(Long skillId, Long userId, LocalDate usageDate);
     long countBySkillId(Long skillId);
+
+    @org.springframework.data.jpa.repository.Query("SELECT COUNT(DISTINCT u.skill.id) FROM SkillUsage u WHERE u.user.id = :userId")
+    long countDistinctSkillsUsedByUserId(@org.springframework.data.repository.query.Param("userId") Long userId);
 }
