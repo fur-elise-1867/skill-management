@@ -17,6 +17,13 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => !!token.value)
   const isAdmin = computed(() => user.value?.role?.name === 'ADMIN')
   const isEditor = computed(() => user.value?.role?.name === 'EDITOR')
+  const isCurator = computed(() => isAdmin.value || isEditor.value)
+
+  function canManageSkill(authorId?: number) {
+    if (!user.value) return false
+    if (isCurator.value) return true
+    return authorId !== undefined && user.value.id === authorId
+  }
 
   async function register(name: string, email: string, password: string, gender?: string, mobile?: string) {
     loading.value = true
@@ -64,6 +71,8 @@ export const useAuthStore = defineStore('auth', () => {
     isAuthenticated,
     isAdmin,
     isEditor,
+    isCurator,
+    canManageSkill,
     register,
     login,
     fetchCurrentUser,

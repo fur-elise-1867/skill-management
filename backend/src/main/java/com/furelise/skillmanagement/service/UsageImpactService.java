@@ -52,13 +52,13 @@ public class UsageImpactService {
         newUsage.setUser(user);
         skillUsageRepository.save(newUsage);
 
-        long currentCount = skill.getUsageCount() != null ? skill.getUsageCount() : 0L;
+        int currentCount = skill.getUsageCount() != null ? skill.getUsageCount() : 0;
         skill.setUsageCount(currentCount + 1);
         skillRepository.save(skill);
 
         log.info("User {} recorded usage for skill {} on {}", user.getId(), skillId, today);
 
-        return new UsageRecordResponse(skillId, true, skill.getUsageCount(), "Usage recorded successfully");
+        return new UsageRecordResponse(skillId, true, (long) skill.getUsageCount(), "Usage recorded successfully");
     }
 
     @Transactional

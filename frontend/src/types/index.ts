@@ -70,3 +70,5 @@ export interface UpdateStatusRequest {
 export interface ResetPasswordResponse {
   newPassword: string
 }
+
+export * from './skill'

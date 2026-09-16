@@ -45,7 +45,7 @@ class UsageImpactServiceTest {
         user.setId(10L);
         Skill skill = new Skill();
         skill.setId(skillId);
-        skill.setUsageCount(5L);
+        skill.setUsageCount(5);
 
         when(skillRepository.findById(skillId)).thenReturn(Optional.of(skill));
         when(skillUsageRepository.findBySkillIdAndUserIdAndUsageDate(eq(skillId), eq(10L), any(LocalDate.class)))
@@ -56,6 +56,6 @@ class UsageImpactServiceTest {
         assertTrue(response.newlyRecorded());
         verify(skillUsageRepository).save(any());
         verify(skillRepository).save(skill);
-        assertTrue(skill.getUsageCount() == 6L);
+        assertTrue(skill.getUsageCount() == 6);
     }
 }

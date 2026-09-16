@@ -8,7 +8,6 @@ import com.furelise.skillmanagement.dto.StatsDto.MySkillsStatsResponse;
 import com.furelise.skillmanagement.dto.StatsDto.SkillImpactLeaderboardItem;
 import com.furelise.skillmanagement.dto.StatsDto.SkillLeaderboardItem;
 import com.furelise.skillmanagement.model.Skill;
-import com.furelise.skillmanagement.model.SkillStatus;
 import com.furelise.skillmanagement.model.User;
 import com.furelise.skillmanagement.repository.ImpactRecordRepository;
 import com.furelise.skillmanagement.repository.SkillCategoryRepository;
@@ -44,8 +43,8 @@ public class StatsService {
         long totalSkills = skillRepository.countByDeletedAtIsNull();
         
         Map<String, Long> skillsByStatus = new HashMap<>();
-        for (SkillStatus status : SkillStatus.values()) {
-            skillsByStatus.put(status.name(), skillRepository.countByStatusAndDeletedAtIsNull(status));
+        for (String status : List.of("PENDING", "PUBLISHED", "REJECTED", "DEPRECATED", "MERGED")) {
+            skillsByStatus.put(status, skillRepository.countByStatusAndDeletedAtIsNull(status));
         }
 
         ZonedDateTime oneWeekAgo = ZonedDateTime.now().minusDays(7);
@@ -60,7 +59,7 @@ public class StatsService {
                 .map(cat -> new CategoryStat(
                         cat.getId(), 
                         cat.getName(), 
-                        cat.getMappings() != null ? cat.getMappings().size() : 0L))
+                        cat.getSkills() != null ? cat.getSkills().size() : 0L))
                 .toList();
 
         return new DashboardStatsResponse(
@@ -75,10 +74,10 @@ public class StatsService {
 
     @Transactional(readOnly = true)
     public LeaderboardResponse getLeaderboard() {
-        List<SkillLeaderboardItem> topUsedSkills = skillRepository.findTop10ByStatusAndDeletedAtIsNullOrderByUsageCountDesc(SkillStatus.PUBLISHED)
+        List<SkillLeaderboardItem> topUsedSkills = skillRepository.findTop10ByStatusAndDeletedAtIsNullOrderByUsageCountDesc("PUBLISHED")
                 .stream().map(this::mapToLeaderboardItem).toList();
 
-        List<SkillLeaderboardItem> topRatedSkills = skillRepository.findTop10ByStatusAndDeletedAtIsNullAndRatingCountGreaterThanEqualOrderByAverageRatingDesc(SkillStatus.PUBLISHED, 1)
+        List<SkillLeaderboardItem> topRatedSkills = skillRepository.findTop10ByStatusAndDeletedAtIsNullAndRatingCountGreaterThanEqualOrderByAverageRatingDesc("PUBLISHED", 1)
                 .stream().map(this::mapToLeaderboardItem).toList();
 
         List<Object[]> topImpactRaw = impactRecordRepository.findTopImpactSkills();
@@ -90,12 +89,11 @@ public class StatsService {
             BigDecimal totalMm = (BigDecimal) row[1];
             Long recordCount = (Long) row[2];
             skillRepository.findById(skillId).ifPresent(s -> {
-                if (s.getStatus() == SkillStatus.PUBLISHED && s.getDeletedAt() == null) {
+                if ("PUBLISHED".equalsIgnoreCase(s.getStatus()) && s.getDeletedAt() == null) {
                     topImpactSkills.add(new SkillImpactLeaderboardItem(
                             s.getId(),
                             s.getTitle(),
                             getAuthorName(s),
-                            s.getCurrentVersion(),
                             totalMm,
                             recordCount
                     ));
@@ -104,7 +102,7 @@ public class StatsService {
             count++;
         }
 
-        List<Object[]> topContributorsRaw = skillRepository.findTopContributors(SkillStatus.PUBLISHED);
+        List<Object[]> topContributorsRaw = skillRepository.findTopContributors("PUBLISHED");
         List<ContributorLeaderboardItem> topContributors = new ArrayList<>();
         int cCount = 0;
         for (Object[] row : topContributorsRaw) {
@@ -130,7 +128,7 @@ public class StatsService {
     @Transactional(readOnly = true)
     public MySkillsStatsResponse getMyStats(User user) {
         long mySkillsCount = skillRepository.countByAuthorIdAndDeletedAtIsNull(user.getId());
-        long myPublishedCount = skillRepository.countByAuthorIdAndStatusAndDeletedAtIsNull(user.getId(), SkillStatus.PUBLISHED);
+        long myPublishedCount = skillRepository.countByAuthorIdAndStatusAndDeletedAtIsNull(user.getId(), "PUBLISHED");
         Long totalUsageOfMySkills = skillRepository.sumUsageByAuthorId(user.getId());
         long skillsUsedByMe = skillUsageRepository.countDistinctSkillsUsedByUserId(user.getId());
         BigDecimal totalMmSavedByMe = impactRecordRepository.sumEstimatedMmSavedByUserId(user.getId());

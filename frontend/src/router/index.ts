@@ -6,7 +6,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/login',
+      redirect: '/dashboard',
     },
     {
       path: '/login',
@@ -32,10 +32,55 @@ const router = createRouter({
       component: () => import('@/views/AccountInfoView.vue'),
       meta: { requiresAuth: true },
     },
+    // Skills Store routes
+    {
+      path: '/skills',
+      name: 'skills',
+      component: () => import('@/views/SkillListView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/skills/upload',
+      name: 'skill-upload',
+      component: () => import('@/views/SkillUploadView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/skills/my',
+      name: 'my-skills',
+      component: () => import('@/views/MySkillsView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/skills/:id',
+      name: 'skill-detail',
+      component: () => import('@/views/SkillDetailView.vue'),
+      meta: { requiresAuth: true },
+    },
+    // Curator routes
+    {
+      path: '/curator/pending',
+      name: 'curator-pending',
+      component: () => import('@/views/PendingApprovalView.vue'),
+      meta: { requiresAuth: true, requiresCurator: true },
+    },
+    {
+      path: '/curator/merge',
+      name: 'curator-merge',
+      component: () => import('@/views/MergeSkillsView.vue'),
+      meta: { requiresAuth: true, requiresCurator: true },
+    },
+    // Admin routes
     {
       path: '/admin',
       name: 'admin',
       component: () => import('@/views/AdminView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/audit',
+      name: 'admin-audit',
+      component: () => import('@/views/AuditLogView.vue'),
       meta: { requiresAuth: true, requiresAdmin: true },
     },
   ],
@@ -59,6 +104,10 @@ router.beforeEach(async (to) => {
   }
 
   if (to.meta.requiresAdmin && !auth.isAdmin) {
+    return { name: 'dashboard' }
+  }
+
+  if (to.meta.requiresCurator && !auth.isCurator) {
     return { name: 'dashboard' }
   }
 })
