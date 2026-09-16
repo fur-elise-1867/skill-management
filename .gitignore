@@ -42,6 +42,17 @@ frontend/.env.*.local
 .DS_Store
 Thumbs.db
 
+### AI ###
+.gemini/
+.agents/
+.claude/
+.antigravity/
+.github/
+.cursor/
+.bmad/
+.copilot/
+.codex/
+
 ### Environment ###
 .env
 *.log
@@ -50,9 +61,4 @@ Thumbs.db
 docker-customer/
 local-environment/
 .env.example
-.gemini/
-.agents/
-.claude/
-.antigravity/
-.github/
 docs/

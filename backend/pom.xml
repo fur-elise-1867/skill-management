@@ -65,6 +65,13 @@
 			<artifactId>flyway-database-postgresql</artifactId>
 		</dependency>
 
+		<!-- PGVector -->
+		<dependency>
+			<groupId>com.pgvector</groupId>
+			<artifactId>pgvector</artifactId>
+			<version>0.1.6</version>
+		</dependency>
+
 		<!-- JWT (jjwt 0.12.x) -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>

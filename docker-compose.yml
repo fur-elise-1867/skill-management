@@ -1,7 +1,7 @@
 services:
   # ======================== PostgreSQL ========================
   postgres:
-    image: postgres:17-alpine
+    image: pgvector/pgvector:pg17
     container_name: skill-mgmt-postgres
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-skill_management_db}

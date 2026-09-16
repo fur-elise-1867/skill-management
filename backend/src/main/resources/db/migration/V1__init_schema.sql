@@ -1,7 +1,7 @@
 -- Flyway migration V1: Initial schema for skill-management
 -- PostgreSQL 17 compatible
 
-CREATE TABLE IF NOT EXISTS _user (
+CREATE TABLE IF NOT EXISTS "user" (
     id          BIGSERIAL PRIMARY KEY,
     name        VARCHAR(255),
     email       VARCHAR(255) NOT NULL,
@@ -14,5 +14,5 @@ CREATE TABLE IF NOT EXISTS _user (
     CONSTRAINT uk_user_email UNIQUE (email)
 );
 
-CREATE INDEX IF NOT EXISTS idx_user_email ON _user(email);
-CREATE INDEX IF NOT EXISTS idx_user_role ON _user(role);
+CREATE INDEX IF NOT EXISTS idx_user_email ON "user"(email);
+CREATE INDEX IF NOT EXISTS idx_user_role ON "user"(role);
